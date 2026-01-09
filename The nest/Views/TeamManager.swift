@@ -41,4 +41,25 @@ class TeamManager: ObservableObject {
             return (id: doc.documentID, name: name)
         }
     }
+    
+    /// Adds a user to a project and updates the member dictionary
+    func acceptTeamInvite(teamID: String, userID: String, userName: String, inviteID: String) async throws {
+        let batch = db.batch()
+        
+        // 1. Reference to the Project/Team document
+        let projectRef = db.collection("projects").document(teamID)
+        
+        // 2. Update members array and the memberNames dictionary (using dot notation)
+        batch.updateData([
+            "members": FieldValue.arrayUnion([userID]),
+            "memberNames.\(userID)": userName
+        ], forDocument: projectRef)
+        
+        // 3. Mark the invite as "accepted" or delete it
+        let inviteRef = db.collection("team_invites").document(inviteID)
+        batch.updateData(["status": "accepted"], forDocument: inviteRef)
+        
+        // Execute
+        try await batch.commit()
+    }
 }

@@ -3,7 +3,7 @@ import SwiftUI
 struct DiscoveryFeedView: View {
     // 1. Environment & State Objects
     @EnvironmentObject var appState: AppState
-    @EnvironmentObject var navNotifVM: NotificationViewModel // Added for the Red Badge logic
+    @EnvironmentObject var navNotifVM: NotificationViewModel
     @StateObject var feedVM = FeedViewModel()
     
     // 2. UI State
@@ -67,39 +67,8 @@ struct DiscoveryFeedView: View {
                     }
                 }
                 
-                // TOP RIGHT: Messages and Notifications with Badge
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    HStack(spacing: 15) {
-                        // NAVIGATION TO CHAT LIST
-                        NavigationLink(destination: ChatListView().environmentObject(appState)) {
-                            Image(systemName: "bubble.left.and.bubble.right")
-                                .font(.system(size: 15))
-                                .foregroundColor(.black)
-                        }
-                        
-                        // NAVIGATION TO NOTIFICATIONS WITH RED CIRCLE
-                        NavigationLink(destination: NotificationCenterView().environmentObject(navNotifVM)) {
-                            ZStack(alignment: .topTrailing) {
-                                Image(systemName: "bell")
-                                    .font(.system(size: 18))
-                                    .foregroundColor(.black)
-                                
-                                // THE RED BADGE
-                                if navNotifVM.unreadCount > 0 {
-                                    Circle()
-                                        .fill(Color.red)
-                                        .frame(width: 9, height: 9)
-                                        .offset(x: 2, y: -2)
-                                        .overlay(
-                                            Circle()
-                                                .stroke(Color.white, lineWidth: 1.5)
-                                                .offset(x: 2, y: -2)
-                                        )
-                                }
-                            }
-                        }
-                    }
-                }
+                // REMOVED: navigationBarTrailing items (Messages and Notifications)
+                // because they are now managed by the bottom Tab Bar.
             }
             
             // --- FLOATING ACTION BUTTON ---
@@ -129,13 +98,14 @@ struct DiscoveryFeedView: View {
         }
         .onAppear {
             feedVM.fetchPosts()
-            navNotifVM.fetchNotifications() // Sync notifications on load
+            navNotifVM.fetchNotifications() // Keeps the badge sync active for the Tab Bar
         }
     }
 }
+
 // MARK: - Preview
 #Preview {
     DiscoveryFeedView()
         .environmentObject(AppState())
-        .environmentObject(NotificationViewModel()) // Add this to stop Preview crashes
+        .environmentObject(NotificationViewModel())
 }

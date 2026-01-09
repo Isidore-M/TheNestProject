@@ -1,46 +1,82 @@
 import SwiftUI
-import FirebaseFirestore
 
 struct NotificationCenterView: View {
     @EnvironmentObject var appState: AppState
-    @State private var notifications: [AppNotification] = []
+    @EnvironmentObject var navNotifVM: NotificationViewModel
+    
+    @State private var selectedTab = 0
 
     var body: some View {
-        ScrollView {
-            LazyVStack(spacing: 15) {
-                if notifications.isEmpty {
-                    Text("No notifications yet.")
-                        .font(.custom("Poppins-Regular", size: 14))
-                        .foregroundColor(.gray)
-                        .padding(.top, 50)
+        VStack(spacing: 0) {
+            // --- TAB PICKER ---
+            Picker("", selection: $selectedTab) {
+                Text("Activity").tag(0)
+                Text("Requests").tag(1)
+            }
+            .pickerStyle(.segmented)
+            .padding()
+            .background(Color.white)
+
+            // --- NOTIFICATION LIST ---
+            List {
+                let filteredNotifs = navNotifVM.notifications.filter { notif in
+                    if selectedTab == 0 {
+                        return notif.type == "like" || notif.type == "comment"
+                    } else {
+                        return notif.type == "collaboration_request"
+                    }
+                }
+
+                if filteredNotifs.isEmpty {
+                    emptyStateView
                 } else {
-                    ForEach(notifications) { notif in
-                        if notif.type == "collaboration_request" {
-                            CollaborationNotificationCard(notification: notif)
+                    ForEach(filteredNotifs) { notif in
+                        Group {
+                            if selectedTab == 0 {
+                                GeneralNotificationRow(notification: notif)
+                            } else {
+                                CollaborationNotificationCard(notification: notif)
+                            }
+                        }
+                        .listRowSeparator(.hidden) // Keep the clean card look
+                        .listRowBackground(Color.clear)
+                        .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
+                        // --- THE SWIPE ACTION ---
+                        .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                            Button(role: .destructive) {
+                                if let id = notif.id {
+                                    navNotifVM.deleteNotification(notificationID: id)
+                                }
+                            } label: {
+                                Label("Delete", systemImage: "trash")
+                            }
                         }
                     }
                 }
             }
-            .padding()
+            .listStyle(.plain) // Removes default List styling
+            .background(Color(UIColor.systemGroupedBackground))
         }
         .navigationTitle("Notifications")
         .navigationBarTitleDisplayMode(.inline)
-        .onAppear(perform: fetchNotifications)
+        .onAppear {
+            navNotifVM.fetchNotifications()
+            navNotifVM.markAllAsRead()
+        }
     }
 
-    func fetchNotifications() {
-        let db = Firestore.firestore()
-        guard let uid = appState.currentUser?.uid else { return }
-        
-        db.collection("notifications")
-            .whereField("receiverId", isEqualTo: uid)
-            .order(by: "timestamp", descending: true)
-            .addSnapshotListener { query, error in
-                if let error = error {
-                    print("DEBUG: \(error.localizedDescription)")
-                    return
-                }
-                self.notifications = query?.documents.compactMap { try? $0.data(as: AppNotification.self) } ?? []
-            }
+    // Helper for the empty state
+    private var emptyStateView: some View {
+        VStack(spacing: 15) {
+            Image(systemName: selectedTab == 0 ? "bell.badge" : "person.badge.plus")
+                .font(.system(size: 44))
+                .foregroundColor(.gray.opacity(0.2))
+            Text(selectedTab == 0 ? "No activity yet" : "No collaboration requests")
+                .font(.custom("Poppins-Medium", size: 15))
+                .foregroundColor(.gray)
+        }
+        .frame(maxWidth: .infinity, minHeight: 400)
+        .listRowBackground(Color.clear)
+        .listRowSeparator(.hidden)
     }
 }

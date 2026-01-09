@@ -46,4 +46,22 @@ class NotificationViewModel: ObservableObject {
             }
         }
     }
+    
+
+    func deleteNotification(notificationID: String) {
+        let db = Firestore.firestore()
+        
+        // 1. Remove from Firestore
+        db.collection("notifications").document(notificationID).delete { error in
+            if let error = error {
+                print("DEBUG: Failed to delete notification: \(error.localizedDescription)")
+            } else {
+                // 2. Local update (optional as the snapshot listener will handle it,
+                // but doing it manually makes the UI feel faster)
+                DispatchQueue.main.async {
+                    self.notifications.removeAll { $0.id == notificationID }
+                }
+            }
+        }
+    }
 }
