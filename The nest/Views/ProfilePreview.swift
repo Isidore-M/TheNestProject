@@ -13,103 +13,187 @@ struct ProfilePreview: View {
 
     var body: some View {
         NavigationStack {
-            VStack(spacing: 25) {
-                // 1. PROFILE HEADER
-                if let profile = userProfile {
-                    VStack(spacing: 15) {
-                        AvatarView(name: profile["name"] as? String ?? "U", size: 80)
+            ScrollView {
+                VStack(spacing: 30) {
+                    
+                    // --- 1. HEADER: IDENTITY ---
+                    if let profile = userProfile {
+                        VStack(spacing: 15) {
+                            AvatarView(name: profile["name"] as? String ?? "U", size: 100)
+                                .shadow(color: .black.opacity(0.05), radius: 10, y: 5)
+                            
+                            VStack(spacing: 4) {
+                                Text(profile["name"] as? String ?? "Anonymous User")
+                                    .font(.custom("Poppins-Bold", size: 24))
+                                
+                                Text(profile["role"] as? String ?? "Collaborator")
+                                    .font(.custom("Poppins-Medium", size: 16))
+                                    .foregroundColor(.accentColor)
+                            }
+                        }
+                        .padding(.top, 20)
                         
-                        VStack(spacing: 5) {
-                            Text(profile["name"] as? String ?? "User")
-                                .font(.custom("Poppins-Bold", size: 20))
-                            Text(profile["role"] as? String ?? "Collaborator")
-                                .font(.custom("Poppins-Medium", size: 14))
-                                .foregroundColor(.accentColor)
+                        // --- 2. CONTACT & LINKS SECTION ---
+                        VStack(spacing: 16) {
+                            // Email Row
+                            ProfileInfoRow(
+                                icon: "envelope.fill",
+                                label: "Email Address",
+                                value: profile["email"] as? String ?? "No email provided",
+                                isLink: false
+                            )
+                            
+                            // Portfolio Link Row
+                            if let link = profile["portfolioLink"] as? String, !link.isEmpty {
+                                ProfileInfoRow(
+                                    icon: "link",
+                                    label: "Portfolio / Website",
+                                    value: link,
+                                    isLink: true
+                                )
+                            }
                         }
-                    }
-                    .padding(.top)
-                } else {
-                    ProgressView().padding()
-                }
+                        .padding()
+                        .background(Color.gray.opacity(0.05))
+                        .cornerRadius(20)
+                        
+                        Divider().padding(.vertical, 10)
 
-                Divider()
-
-                // 2. TEAM SELECTION MENU
-                VStack(alignment: .leading, spacing: 10) {
-                    Text("Quick Actions")
-                        .font(.custom("Poppins-Bold", size: 14))
-                        .foregroundColor(.secondary)
-
-                    if myTeams.isEmpty {
-                        Text("You don't manage any teams yet.")
-                            .font(.custom("Poppins-Italic", size: 13))
-                            .foregroundColor(.gray)
-                    } else {
-                        Menu {
-                            ForEach(myTeams, id: \.id) { team in
-                                Button(team.name) {
-                                    sendInvite(toTeam: team)
+                        // --- 3. TEAM MANAGEMENT ---
+                        VStack(alignment: .leading, spacing: 15) {
+                            Text("Recruitment")
+                                .font(.custom("Poppins-Bold", size: 16))
+                                .foregroundColor(.secondary)
+                            
+                            if myTeams.isEmpty {
+                                Text("You don't manage any active teams.")
+                                    .font(.custom("Poppins-Italic", size: 14))
+                                    .foregroundColor(.gray)
+                                    .frame(maxWidth: .infinity, alignment: .center)
+                                    .padding()
+                            } else {
+                                Menu {
+                                    ForEach(myTeams, id: \.id) { team in
+                                        Button(team.name) {
+                                            sendInvite(toTeam: team)
+                                        }
+                                    }
+                                } label: {
+                                    HStack {
+                                        Label(isSending ? "Processing..." : "Add to a Project Team", systemImage: "person.badge.plus")
+                                            .font(.custom("Poppins-Bold", size: 15))
+                                        Spacer()
+                                        Image(systemName: "chevron.right")
+                                    }
+                                    .padding()
+                                    .background(isSending ? Color.gray.opacity(0.2) : Color.accentColor)
+                                    .foregroundColor(.white)
+                                    .cornerRadius(15)
+                                    .shadow(color: Color.accentColor.opacity(0.3), radius: 10, x: 0, y: 5)
                                 }
+                                .disabled(isSending)
                             }
-                        } label: {
-                            HStack {
-                                Label(isSending ? "Sending..." : "Add to a Team", systemImage: "person.badge.plus")
-                                Spacer()
-                                Image(systemName: "chevron.right")
-                            }
-                            .fontWeight(.semibold)
-                            .padding()
-                            .background(isSending ? Color.gray.opacity(0.2) : Color.accentColor.opacity(0.1))
-                            .foregroundColor(isSending ? .gray : .accentColor)
-                            .cornerRadius(12)
                         }
-                        .disabled(isSending)
+                    } else {
+                        // Loading State
+                        VStack {
+                            ProgressView()
+                            Text("Fetching profile...")
+                                .font(.custom("Poppins-Medium", size: 14))
+                                .foregroundColor(.gray)
+                        }
+                        .padding(.top, 100)
                     }
                 }
-
-                Spacer()
+                .padding(20)
             }
-            .padding()
-            .navigationTitle("Collaborator Info")
+            .navigationTitle("Profile Details")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Close") { dismiss() }
+                        .font(.custom("Poppins-Medium", size: 15))
                 }
             }
             .task {
                 await fetchTargetUser()
-                do {
-                    myTeams = try await teamManager.fetchAdminTeams()
-                } catch {
-                    print("Error: \(error.localizedDescription)")
-                }
+                try? myTeams = await teamManager.fetchAdminTeams()
             }
         }
     }
 
+    // MARK: - Logic
+    
     private func fetchTargetUser() async {
         let db = Firestore.firestore()
         let doc = try? await db.collection("users").document(userID).getDocument()
-        self.userProfile = doc?.data()
+        if let data = doc?.data() {
+            self.userProfile = data
+        }
     }
 
     private func sendInvite(toTeam team: (id: String, name: String)) {
-        guard let myName = appState.userProfile?["name"] as? String else { return }
         isSending = true
         Task {
             do {
-                // This uses your TeamManager logic to add user to dictionary and array
+                // Uses the TeamManager logic to add to Dictionary and Array
                 try await teamManager.acceptTeamInvite(
                     teamID: team.id,
                     userID: userID,
                     userName: userProfile?["name"] as? String ?? "New Member",
-                    inviteID: "manual_add" // Placeholder
+                    inviteID: "admin_add_\(UUID().uuidString)"
                 )
                 isSending = false
-                dismiss()
+                dismiss() // Close on success
             } catch {
+                print("DEBUG: Error adding to team: \(error.localizedDescription)")
                 isSending = false
+            }
+        }
+    }
+}
+
+// MARK: - Helper UI Component
+
+struct ProfileInfoRow: View {
+    let icon: String
+    let label: String
+    let value: String
+    let isLink: Bool
+    
+    var body: some View {
+        HStack(spacing: 15) {
+            ZStack {
+                Circle().fill(Color.accentColor.opacity(0.1)).frame(width: 36, height: 36)
+                Image(systemName: icon).foregroundColor(.accentColor).font(.system(size: 14))
+            }
+            
+            VStack(alignment: .leading, spacing: 2) {
+                Text(label)
+                    .font(.custom("Poppins-Medium", size: 11))
+                    .foregroundColor(.secondary)
+                    .textCase(.uppercase)
+                
+                Text(value)
+                    .font(.custom("Poppins-Bold", size: 14))
+                    .foregroundColor(.primary)
+                    .lineLimit(1)
+            }
+            
+            Spacer()
+            
+            if isLink, let url = URL(string: value.contains("http") ? value : "https://\(value)") {
+                Link(destination: url) {
+                    Image(systemName: "arrow.up.right.circle.fill")
+                        .font(.title3)
+                        .foregroundColor(.accentColor)
+                }
+            } else {
+                Button(action: { UIPasteboard.general.string = value }) {
+                    Image(systemName: "doc.on.doc")
+                        .font(.subheadline)
+                        .foregroundColor(.gray)
+                }
             }
         }
     }
