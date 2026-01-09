@@ -11,6 +11,7 @@ struct ProfilePreview: View {
     
     @State private var userProfile: [String: Any]?
     @State private var isProcessing = false
+    @State private var showAddConfirmation = false // Added for safety alert
     @Environment(\.dismiss) var dismiss
 
     var body: some View {
@@ -31,7 +32,7 @@ struct ProfilePreview: View {
                                     
                                     Text(profile["role"] as? String ?? "Collaborator")
                                         .font(.custom("Poppins-Medium", size: 16))
-                                        .foregroundColor(.accent)
+                                        .foregroundColor(.accentColor)
                                 }
                             }
                             .padding(.top, 20)
@@ -65,10 +66,9 @@ struct ProfilePreview: View {
                 }
 
                 // --- 3. BOTTOM ACTIONS ---
-                // We place these at the bottom so they are always visible
                 VStack(spacing: 12) {
-                    // ACCEPT BUTTON
-                    Button(action: acceptMember) {
+                    // ADD BUTTON: Triggers Confirmation Alert
+                    Button(action: { showAddConfirmation = true }) {
                         HStack {
                             if isProcessing {
                                 ProgressView().tint(.white)
@@ -79,10 +79,10 @@ struct ProfilePreview: View {
                         }
                         .frame(maxWidth: .infinity)
                         .padding()
-                        .background(isProcessing ? Color.gray : Color.accent)
+                        .background(isProcessing ? Color.gray : Color.accentColor)
                         .foregroundColor(.white)
                         .cornerRadius(15)
-                        .shadow(color: Color.accent.opacity(0.3), radius: 10, x: 0, y: 5)
+                        .shadow(color: Color.accentColor.opacity(0.3), radius: 10, x: 0, y: 5)
                     }
                     .disabled(isProcessing || userProfile == nil)
 
@@ -106,6 +106,16 @@ struct ProfilePreview: View {
                         .font(.custom("Poppins-Medium", size: 15))
                 }
             }
+            // --- THE CONFIRMATION ALERT ---
+            .alert("Add to Team?", isPresented: $showAddConfirmation) {
+                Button("Cancel", role: .cancel) { }
+                Button("Confirm Add") {
+                    acceptMember()
+                }
+            } message: {
+                let name = userProfile?["name"] as? String ?? "this user"
+                Text("Are you sure you want to add \(name) to your project team? This will grant them access to your group chat and project details.")
+            }
             .task {
                 await fetchTargetUser()
             }
@@ -128,13 +138,12 @@ struct ProfilePreview: View {
         
         Task {
             do {
-                // 1. Adds member to project members array AND memberNames dictionary
-                // 2. Deletes the notification
-                try await teamManager.acceptTeamInvite(
-                    teamID: projectID,
+                // Calls the TeamManager Master Sync logic
+                try await teamManager.acceptMemberToTeam(
+                    projectID: projectID,
                     userID: userID,
                     userName: name,
-                    inviteID: notificationID
+                    notificationID: notificationID
                 )
                 isProcessing = false
                 dismiss() // Success

@@ -59,7 +59,6 @@
 		4D49BCFF2EECDD3A008960AC /* Exceptions for "The nest" folder in "The nest" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				Onboarding/LoadingView.swift,
 				Views/NavigationView.swift,
 			);
 			target = 4D8404192EA5DA030003C475 /* The nest */;
