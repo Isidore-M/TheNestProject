@@ -52,7 +52,7 @@ struct ChatRoomView: View {
                             .font(.system(size: 18, weight: .bold))
                             .foregroundColor(.white)
                             .padding(10)
-                            .background(messageText.isEmpty ? Color.gray : Color.accentColor)
+                            .background(messageText.isEmpty ? Color.gray : Color.accent)
                             .clipShape(Circle())
                     }
                     .disabled(messageText.isEmpty)
@@ -108,7 +108,7 @@ struct MessageBubble: View {
                 .font(.custom("Poppins-Regular", size: 15))
                 .padding(.horizontal, 16)
                 .padding(.vertical, 10)
-                .background(isCurrentUser ? Color.accentColor : Color.gray.opacity(0.2))
+                .background(isCurrentUser ? Color.accent : Color.gray.opacity(0.2))
                 .foregroundColor(isCurrentUser ? .white : .black)
                 .cornerRadius(18, corners: isCurrentUser ? [.topLeft, .topRight, .bottomLeft] : [.topLeft, .topRight, .bottomRight])
 

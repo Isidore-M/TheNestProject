@@ -24,7 +24,7 @@ struct ProfileDetailsView: View {
                             Text(userName).font(.custom("Poppins-Bold", size: 22))
                             Text(appState.userProfile?["role"] as? String ?? "Collaborator")
                                 .font(.custom("Poppins-Medium", size: 14))
-                                .foregroundColor(.accentColor)
+                                .foregroundColor(.accent)
                         }
                     }
                     .padding(.top, 10)
@@ -55,7 +55,7 @@ struct ProfileDetailsView: View {
                         
                         VStack(spacing: 0) {
                             Button(action: { showEditProfile.toggle() }) {
-                                ProfileSettingsRow(icon: "person.fill", title: "Edit Profile", color: .accentColor)
+                                ProfileSettingsRow(icon: "person.fill", title: "Edit Profile", color: .accent)
                             }
                             Divider().padding(.leading, 50)
                             ProfileSettingsRow(icon: "bell.fill", title: "Notifications", color: .orange)

@@ -2,6 +2,7 @@
 //  TeamManager.swift
 //  The nest
 
+
 import Foundation
 import FirebaseFirestore
 import FirebaseAuth
@@ -9,57 +10,45 @@ import FirebaseAuth
 class TeamManager: ObservableObject {
     private let db = Firestore.firestore()
     
-    /// Sends a team invitation to a specific user
-    func sendTeamInvite(to targetUserID: String, teamID: String, teamName: String) async throws {
-        guard let currentUserID = Auth.auth().currentUser?.uid else {
-            throw NSError(domain: "AuthError", code: 401, userInfo: [NSLocalizedDescriptionKey: "User not logged in"])
-        }
-        
-        let inviteData: [String: Any] = [
-            "teamID": teamID,
-            "teamName": teamName,
-            "senderID": currentUserID,
-            "receiverID": targetUserID,
-            "status": "pending",
-            "timestamp": FieldValue.serverTimestamp()
-        ]
-        
-        // Add to 'team_invites' collection
-        try await db.collection("team_invites").addDocument(data: inviteData)
-    }
-    
-    /// Fetches all teams where the current user is an admin
-    func fetchAdminTeams() async throws -> [(id: String, name: String)] {
-        guard let uid = Auth.auth().currentUser?.uid else { return [] }
-        
-        let snapshot = try await db.collection("teams")
-            .whereField("adminID", isEqualTo: uid)
-            .getDocuments()
-        
-        return snapshot.documents.map { doc in
-            let name = doc.get("name") as? String ?? "Unknown Team"
-            return (id: doc.documentID, name: name)
-        }
-    }
-    
-    /// Adds a user to a project and updates the member dictionary
+    /// The "Master Sync" function to accept a new collaborator
     func acceptTeamInvite(teamID: String, userID: String, userName: String, inviteID: String) async throws {
         let batch = db.batch()
         
-        // 1. Reference to the Project/Team document
+        // 1. Reference the Project/Team document
+        // Make sure your collection name is "projects" in Firebase
         let projectRef = db.collection("projects").document(teamID)
         
-        // 2. Update members array and the memberNames dictionary (using dot notation)
+        // 2. Update members (Array) and memberNames (Dictionary)
+        // We use dot notation "memberNames.id" to avoid overwriting other names
         batch.updateData([
             "members": FieldValue.arrayUnion([userID]),
             "memberNames.\(userID)": userName
         ], forDocument: projectRef)
         
-        // 3. Mark the invite as "accepted" or delete it
-        let inviteRef = db.collection("team_invites").document(inviteID)
-        batch.updateData(["status": "accepted"], forDocument: inviteRef)
+        // 3. Delete the Notification
+        // This clears the alert from the user's Notification Center
+        let notifRef = db.collection("notifications").document(inviteID)
+        batch.deleteDocument(notifRef)
         
-        // Execute
+        // 4. Commit all changes at once
         try await batch.commit()
+        
+        print("DEBUG: Successfully added \(userName) to project \(teamID)")
+    }
+    
+    /// Fetches projects where the current user is the administrator
+    func fetchAdminTeams() async throws -> [(id: String, name: String)] {
+        guard let myUID = Auth.auth().currentUser?.uid else { return [] }
+        
+        // Query projects where authorId is the current user
+        let snapshot = try await db.collection("projects")
+            .whereField("authorId", isEqualTo: myUID)
+            .getDocuments()
+        
+        return snapshot.documents.compactMap { doc in
+            let data = doc.data()
+            let title = data["title"] as? String ?? "Untitled Project"
+            return (id: doc.documentID, name: title)
+        }
     }
 }

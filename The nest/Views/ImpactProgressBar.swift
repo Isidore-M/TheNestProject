@@ -31,7 +31,7 @@ struct ImpactProgressBar: View {
                     
                     Capsule()
                         // Gradient from your Accent to Green
-                        .fill(LinearGradient(colors: [.accentColor, .green], startPoint: .leading, endPoint: .trailing))
+                        .fill(LinearGradient(colors: [.accent, .green], startPoint: .leading, endPoint: .trailing))
                         .frame(width: geo.size.width * CGFloat(min(Double(score) / Double(milestone), 1.0)), height: 10)
                 }
             }

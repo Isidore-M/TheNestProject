@@ -7,65 +7,79 @@ struct NotificationCenterView: View {
     @State private var selectedTab = 0
 
     var body: some View {
-        VStack(spacing: 0) {
-            // --- TAB PICKER ---
-            Picker("", selection: $selectedTab) {
-                Text("Activity").tag(0)
-                Text("Requests").tag(1)
-            }
-            .pickerStyle(.segmented)
-            .padding()
-            .background(Color.white)
+        // --- THE CRITICAL FIX: NavigationStack ---
+        // This provides the context needed for "Connect" to open the Chat
+        NavigationStack {
+            VStack(spacing: 0) {
+                // --- TAB PICKER ---
+                Picker("", selection: $selectedTab) {
+                    Text("Activity").tag(0)
+                    Text("Requests").tag(1)
+                }
+                .pickerStyle(.segmented)
+                .padding()
+                .background(Color.white)
 
-            // --- NOTIFICATION LIST ---
-            List {
-                let filteredNotifs = navNotifVM.notifications.filter { notif in
-                    if selectedTab == 0 {
-                        return notif.type == "like" || notif.type == "comment"
+                // --- NOTIFICATION LIST ---
+                List {
+                    let filteredNotifs = navNotifVM.notifications.filter { notif in
+                        if selectedTab == 0 {
+                            return notif.type == "like" || notif.type == "comment"
+                        } else {
+                            return notif.type == "collaboration_request"
+                        }
+                    }
+
+                    if filteredNotifs.isEmpty {
+                        emptyStateView
                     } else {
-                        return notif.type == "collaboration_request"
+                        ForEach(filteredNotifs) { notif in
+                            Group {
+                                if selectedTab == 0 {
+                                    GeneralNotificationRow(notification: notif)
+                                } else {
+                                    // This card's Connect button will now be ACTIVE
+                                    CollaborationNotificationCard(notification: notif)
+                                }
+                            }
+                            .listRowSeparator(.hidden)
+                            .listRowBackground(Color.clear)
+                            .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
+                            .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                                Button(role: .destructive) {
+                                    if let id = notif.id {
+                                        navNotifVM.deleteNotification(notificationID: id)
+                                    }
+                                } label: {
+                                    Label("Delete", systemImage: "trash")
+                                }
+                            }
+                        }
                     }
                 }
-
-                if filteredNotifs.isEmpty {
-                    emptyStateView
-                } else {
-                    ForEach(filteredNotifs) { notif in
-                        Group {
-                            if selectedTab == 0 {
-                                GeneralNotificationRow(notification: notif)
-                            } else {
-                                CollaborationNotificationCard(notification: notif)
-                            }
+                .listStyle(.plain)
+                .background(Color(UIColor.systemGroupedBackground))
+            }
+            .navigationTitle("Notifications")
+            .navigationBarTitleDisplayMode(.inline)
+            // --- OPTIONAL: Clear All Button ---
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    if !navNotifVM.notifications.isEmpty {
+                        Button("Mark Read") {
+                            navNotifVM.markAllAsRead()
                         }
-                        .listRowSeparator(.hidden) // Keep the clean card look
-                        .listRowBackground(Color.clear)
-                        .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
-                        // --- THE SWIPE ACTION ---
-                        .swipeActions(edge: .trailing, allowsFullSwipe: true) {
-                            Button(role: .destructive) {
-                                if let id = notif.id {
-                                    navNotifVM.deleteNotification(notificationID: id)
-                                }
-                            } label: {
-                                Label("Delete", systemImage: "trash")
-                            }
-                        }
+                        .font(.custom("Poppins-Medium", size: 13))
                     }
                 }
             }
-            .listStyle(.plain) // Removes default List styling
-            .background(Color(UIColor.systemGroupedBackground))
         }
-        .navigationTitle("Notifications")
-        .navigationBarTitleDisplayMode(.inline)
         .onAppear {
             navNotifVM.fetchNotifications()
             navNotifVM.markAllAsRead()
         }
     }
 
-    // Helper for the empty state
     private var emptyStateView: some View {
         VStack(spacing: 15) {
             Image(systemName: selectedTab == 0 ? "bell.badge" : "person.badge.plus")
@@ -75,7 +89,8 @@ struct NotificationCenterView: View {
                 .font(.custom("Poppins-Medium", size: 15))
                 .foregroundColor(.gray)
         }
-        .frame(maxWidth: .infinity, minHeight: 400)
+        .frame(maxWidth: .infinity)
+        .padding(.top, 100)
         .listRowBackground(Color.clear)
         .listRowSeparator(.hidden)
     }

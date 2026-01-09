@@ -27,7 +27,7 @@ struct PostCard: View {
                     
                     Text(displayRole)
                         .font(.custom("Poppins-Medium", size: 12))
-                        .foregroundColor(.accentColor)
+                        .foregroundColor(.accent)
                 }
                 Spacer()
             }
@@ -76,7 +76,7 @@ struct PostCard: View {
                             .font(.custom("Poppins-Bold", size: 13))
                             .padding(.horizontal, 18)
                             .padding(.vertical, 8)
-                            .background(isCollaborating ? Color.green : Color.accentColor)
+                            .background(isCollaborating ? Color.green : Color.accent)
                             .foregroundColor(.white)
                             .cornerRadius(25)
                     }

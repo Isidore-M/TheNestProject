@@ -64,7 +64,7 @@ struct CommentSheetView: View {
                     
                     Button(action: submitComment) {
                         Image(systemName: "paperplane.fill")
-                            .foregroundColor(commentText.isEmpty ? .gray : .accentColor)
+                            .foregroundColor(commentText.isEmpty ? .gray : .accent)
                     }
                     .disabled(commentText.isEmpty)
                 }
@@ -112,7 +112,7 @@ struct CommentRow: View {
                         .foregroundColor(.gray)
                     Text(displayRole)
                         .font(.custom("Poppins-Medium", size: 11))
-                        .foregroundColor(.accentColor)
+                        .foregroundColor(.accent)
                 }
                 
                 Text(comment.text)

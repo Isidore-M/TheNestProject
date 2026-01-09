@@ -45,7 +45,7 @@ struct ProfileSetupView: View {
                             .font(.custom("Poppins-Bold", size: 16))
                             .frame(maxWidth: .infinity)
                             .padding()
-                            .background(name.isEmpty ? Color.gray : Color.accentColor)
+                            .background(name.isEmpty ? Color.gray : Color.accent)
                             .foregroundColor(.white)
                             .cornerRadius(10)
                     }

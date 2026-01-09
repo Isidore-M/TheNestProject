@@ -33,7 +33,7 @@ struct DiscoveryFeedView: View {
                         // Loading / Empty State
                         VStack(spacing: 20) {
                             ProgressView()
-                                .tint(.accentColor)
+                                .tint(.accent)
                             Text("Gathering the colony...")
                                 .font(.custom("Poppins-Medium", size: 14))
                                 .foregroundColor(.gray)
@@ -78,9 +78,9 @@ struct DiscoveryFeedView: View {
                 } label: {
                     ZStack {
                         Circle()
-                            .fill(Color.accentColor)
+                            .fill(Color.accent)
                             .frame(width: 56, height: 56)
-                            .shadow(color: .accentColor.opacity(0.3), radius: 10, x: 0, y: 5)
+                            .shadow(color: .accent.opacity(0.3), radius: 10, x: 0, y: 5)
                         
                         Image(systemName: "plus")
                             .font(.system(size: 24, weight: .bold))

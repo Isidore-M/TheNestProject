@@ -36,7 +36,7 @@ struct GeneralNotificationRow: View {
                 VStack {
                     Image(systemName: notification.type == "like" ? "heart.fill" : "bubble.right.fill")
                         .font(.system(size: 10))
-                        .foregroundColor(notification.type == "like" ? .red : .accentColor)
+                        .foregroundColor(notification.type == "like" ? .red : .accent)
                     
                     Text("View Post")
                         .font(.custom("Poppins-Bold", size: 8))

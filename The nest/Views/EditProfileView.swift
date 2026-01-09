@@ -82,10 +82,10 @@ struct EditProfileView: View {
                             .font(.custom("Poppins-Bold", size: 16))
                             .frame(maxWidth: .infinity)
                             .padding()
-                            .background(name.isEmpty || role.isEmpty ? Color.gray : Color.accentColor)
+                            .background(name.isEmpty || role.isEmpty ? Color.gray : Color.accent)
                             .foregroundColor(.white)
                             .cornerRadius(15)
-                            .shadow(color: Color.accentColor.opacity(name.isEmpty ? 0 : 0.3), radius: 10, x: 0, y: 5)
+                            .shadow(color: Color.accent.opacity(name.isEmpty ? 0 : 0.3), radius: 10, x: 0, y: 5)
                     }
                 }
                 .padding()

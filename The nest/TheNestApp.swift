@@ -57,11 +57,11 @@ struct SplashScreenView: View {
                 .frame(width: 80, height: 80)
             
             ProgressView()
-                .tint(.accentColor)
+                .tint(.accent)
             
             Text("The Nest")
                 .font(.custom("Poppins-Bold", size: 24))
-                .foregroundColor(.accentColor)
+                .foregroundColor(.accent)
         }
     }
 }

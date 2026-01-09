@@ -38,12 +38,12 @@ struct CollaborativeProfileView: View {
                     
                     // Avatar Placeholder
                     Circle()
-                        .fill(Color.accentColor.opacity(0.1))
+                        .fill(Color.accent.opacity(0.1))
                         .frame(width: 100, height: 100)
                         .overlay(
                             Text(name.isEmpty ? "?" : String(name.prefix(1)).uppercased())
                                 .font(.custom("Poppins-Bold", size: 36))
-                                .foregroundColor(.accentColor)
+                                .foregroundColor(.accent)
                         )
                     
                     // Form Fields
@@ -87,7 +87,7 @@ struct CollaborativeProfileView: View {
                                 .font(.custom("Poppins-Bold", size: 16))
                                 .frame(maxWidth: .infinity)
                                 .padding()
-                                .background(name.isEmpty || role.isEmpty ? Color.gray : Color.accentColor)
+                                .background(name.isEmpty || role.isEmpty ? Color.gray : Color.accent)
                                 .foregroundColor(.white)
                                 .cornerRadius(15)
                         }
