@@ -37,7 +37,7 @@ struct ProjectCardView: View {
                         .frame(width: 6, height: 6)
                     Text("Active")
                         .font(.custom("Poppins-Medium", size: 10))
-                        .foregroundColor(.green)
+                        .foregroundColor(.green)    
                 }
                 .padding(.horizontal, 8)
                 .padding(.vertical, 4)
