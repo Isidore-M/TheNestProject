@@ -67,8 +67,20 @@ struct DiscoveryFeedView: View {
                     }
                 }
                 
-                // REMOVED: navigationBarTrailing items (Messages and Notifications)
-                // because they are now managed by the bottom Tab Bar.
+                // NEW TOP RIGHT: Team List Button
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    NavigationLink(destination: TeamListView().environmentObject(appState)) {
+                        ZStack {
+                            Circle()
+                                .fill(Color.accent.opacity(0.1))
+                                .frame(width: 36, height: 36)
+                            
+                            Image(systemName: "person.2.fill")
+                                .font(.system(size: 16, weight: .bold))
+                                .foregroundColor(.accent)
+                        }
+                    }
+                }
             }
             
             // --- FLOATING ACTION BUTTON ---
@@ -98,14 +110,7 @@ struct DiscoveryFeedView: View {
         }
         .onAppear {
             feedVM.fetchPosts()
-            navNotifVM.fetchNotifications() // Keeps the badge sync active for the Tab Bar
+            navNotifVM.fetchNotifications()
         }
     }
-}
-
-// MARK: - Preview
-#Preview {
-    DiscoveryFeedView()
-        .environmentObject(AppState())
-        .environmentObject(NotificationViewModel())
 }

@@ -1,6 +1,5 @@
 import SwiftUI
 import FirebaseFirestore
-
 struct ChatRoomView: View {
     let chat: Chat
     @StateObject var viewModel: ChatRoomViewModel
@@ -10,7 +9,6 @@ struct ChatRoomView: View {
 
     init(chat: Chat) {
         self.chat = chat
-        // Initializing the ViewModel with the specific Chat ID
         _viewModel = StateObject(wrappedValue: ChatRoomViewModel(chatId: chat.id ?? "temp_id"))
     }
 
@@ -21,16 +19,19 @@ struct ChatRoomView: View {
                 ScrollView {
                     LazyVStack(spacing: 12) {
                         ForEach(viewModel.messages) { message in
+                            // For group chats, identify the sender name
+                            let senderName = chat.isGroupChat == true ? chat.participantNames[message.senderId] : nil
+                            
                             MessageBubble(
                                 message: message,
-                                isCurrentUser: message.isFromCurrentUser(uid: appState.currentUser?.uid ?? "")
+                                isCurrentUser: message.isFromCurrentUser(uid: appState.currentUser?.uid ?? ""),
+                                senderName: senderName
                             )
                         }
                     }
                     .padding()
                 }
                 .onChange(of: viewModel.messages.count) { _ in
-                    // Automatically scroll to the latest message
                     withAnimation {
                         proxy.scrollTo(viewModel.messages.last?.id, anchor: .bottom)
                     }
@@ -52,7 +53,7 @@ struct ChatRoomView: View {
                             .font(.system(size: 18, weight: .bold))
                             .foregroundColor(.white)
                             .padding(10)
-                            .background(messageText.isEmpty ? Color.gray : Color.accent)
+                            .background(messageText.isEmpty ? Color.gray : Color.accentColor)
                             .clipShape(Circle())
                     }
                     .disabled(messageText.isEmpty)
@@ -65,25 +66,29 @@ struct ChatRoomView: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .principal) {
-                HStack {
-                    let otherName = chat.otherParticipantName(currentUID: appState.currentUser?.uid ?? "")
-                    AvatarView(name: otherName, size: 32)
-                    Text(otherName)
-                        .font(.custom("Poppins-Bold", size: 17))
+                HStack(spacing: 10) {
+                    let chatTitle = chat.displayName(currentUserID: appState.currentUser?.uid ?? "")
+                    if chat.isGroupChat == true {
+                        Image(systemName: "person.3.fill").foregroundColor(.accentColor)
+                    } else {
+                        AvatarView(name: chatTitle, size: 32)
+                    }
+                    Text(chatTitle).font(.custom("Poppins-Bold", size: 17))
                 }
             }
         }
-        .onAppear {
-            viewModel.fetchMessages()
-        }
+        .onAppear { viewModel.fetchMessages() }
     }
 
     private func sendMessage() {
         guard let myId = appState.currentUser?.uid else { return }
         let myName = appState.userProfile?["name"] as? String ?? "User"
-        let otherName = chat.otherParticipantName(currentUID: myId)
+        
+        // Logic for 1-on-1 chats to satisfy ViewModel requirements
         let otherId = chat.participants.first(where: { $0 != myId }) ?? ""
+        let otherName = chat.participantNames[otherId] ?? "Member"
 
+        // FIXED: Matching the specific argument labels expected by your ViewModel
         viewModel.sendMessage(
             text: messageText,
             senderId: myId,
@@ -91,7 +96,7 @@ struct ChatRoomView: View {
             otherId: otherId,
             otherName: otherName
         )
-        messageText = "" // Clear input
+        messageText = ""
     }
 }
 
@@ -99,37 +104,32 @@ struct ChatRoomView: View {
 struct MessageBubble: View {
     let message: Message
     let isCurrentUser: Bool
+    let senderName: String?
 
     var body: some View {
-        HStack {
-            if isCurrentUser { Spacer() }
+        VStack(alignment: isCurrentUser ? .trailing : .leading, spacing: 4) {
+            if let name = senderName, !isCurrentUser {
+                Text(name)
+                    .font(.custom("Poppins-Medium", size: 10))
+                    .foregroundColor(.gray)
+                    .padding(.horizontal, 8)
+            }
+            
+            HStack {
+                if isCurrentUser { Spacer() }
 
-            Text(message.text)
-                .font(.custom("Poppins-Regular", size: 15))
-                .padding(.horizontal, 16)
-                .padding(.vertical, 10)
-                .background(isCurrentUser ? Color.accent : Color.gray.opacity(0.2))
-                .foregroundColor(isCurrentUser ? .white : .black)
-                .cornerRadius(18, corners: isCurrentUser ? [.topLeft, .topRight, .bottomLeft] : [.topLeft, .topRight, .bottomRight])
+                Text(message.text)
+                    .font(.custom("Poppins-Regular", size: 15))
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 10)
+                    .background(isCurrentUser ? Color.accentColor : Color.gray.opacity(0.2))
+                    .foregroundColor(isCurrentUser ? .white : .black)
+                    // FIXED: Replaced custom extension with standard SwiftUI rounded corners
+                    .clipShape(RoundedRectangle(cornerRadius: 18))
 
-            if !isCurrentUser { Spacer() }
+                if !isCurrentUser { Spacer() }
+            }
         }
-        .id(message.id) // Used by ScrollViewReader
-    }
-}
-
-// MARK: - UI Helpers (Shape & Corners)
-struct RoundedCorner: Shape {
-    var radius: CGFloat = .infinity
-    var corners: UIRectCorner = .allCorners
-    func path(in rect: CGRect) -> Path {
-        let path = UIBezierPath(roundedRect: rect, byRoundingCorners: corners, cornerRadii: CGSize(width: radius, height: radius))
-        return Path(path.cgPath)
-    }
-}
-
-extension View {
-    func cornerRadius(_ radius: CGFloat, corners: UIRectCorner) -> some View {
-        clipShape(RoundedCorner(radius: radius, corners: corners))
+        .id(message.id)
     }
 }

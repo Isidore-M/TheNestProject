@@ -1,13 +1,14 @@
 //
-//  ProjectTeam.swift
+//  Project.swift
 //  The nest
 //
-
+//  Created by Eezy Mongo on 2026-01-09.
+//
 
 import Foundation
 import FirebaseFirestore
 
-struct ProjectTeam: Identifiable, Codable {
+struct Project: Identifiable, Codable {
     @DocumentID var id: String?
     var title: String
     var description: String
@@ -18,13 +19,13 @@ struct ProjectTeam: Identifiable, Codable {
     
     // Team Management Fields
     var members: [String]?          // Array of UIDs
-    var memberNames: [String: String]? // [UID: Name]
+    var memberNames: [String: String]? // Dictionary [UID: Name] for Master Sync
     
     // Stats
     var likesCount: Int?
     var commentsCount: Int?
     
-    // Helper for total count
+    // Helper to get total member count (Author + Collaborators)
     var totalMemberCount: Int {
         return (members?.count ?? 0) + 1
     }

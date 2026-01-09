@@ -13,7 +13,7 @@ struct PostCard: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 15) {
             
-            // --- HEADER: Author Info ---
+            // --- HEADER: Author Info & Timestamp ---
             HStack(spacing: 12) {
                 let isMe = post.authorId == appState.currentUser?.uid
                 let displayName = isMe ? (appState.userProfile?["name"] as? String ?? post.authorName ?? "U") : (post.authorName ?? "U")
@@ -25,9 +25,20 @@ struct PostCard: View {
                     Text(displayName)
                         .font(.custom("Poppins-Bold", size: 15))
                     
-                    Text(displayRole)
-                        .font(.custom("Poppins-Medium", size: 12))
-                        .foregroundColor(.accent)
+                    HStack(spacing: 5) {
+                        Text(displayRole)
+                            .font(.custom("Poppins-Medium", size: 12))
+                            .foregroundColor(.accentColor)
+                        
+                        // RESTORED: Relative Timestamp
+                        if let date = post.timestamp {
+                            Text("•")
+                                .foregroundColor(.secondary)
+                            Text(date, style: .relative)
+                                .font(.custom("Poppins-Light", size: 11))
+                                .foregroundColor(.secondary)
+                        }
+                    }
                 }
                 Spacer()
             }
@@ -76,7 +87,7 @@ struct PostCard: View {
                             .font(.custom("Poppins-Bold", size: 13))
                             .padding(.horizontal, 18)
                             .padding(.vertical, 8)
-                            .background(isCollaborating ? Color.green : Color.accent)
+                            .background(isCollaborating ? Color.green : Color.accentColor)
                             .foregroundColor(.white)
                             .cornerRadius(25)
                     }
@@ -92,7 +103,7 @@ struct PostCard: View {
         }
     }
     
-    // Replace your toggleLike and sendCollaborationRequest functions in PostCard.swift
+    // MARK: - Logic
 
     private func toggleLike() {
         guard let myUID = appState.currentUser?.uid,
@@ -115,7 +126,7 @@ struct PostCard: View {
                 "type": "like",
                 "senderId": myUID,
                 "senderName": myName,
-                "receiverId": authorID, // The owner of the post
+                "receiverId": authorID,
                 "postId": postID,
                 "timestamp": FieldValue.serverTimestamp(),
                 "isRead": false
@@ -140,7 +151,7 @@ struct PostCard: View {
             "senderId": myUID,
             "senderName": myName,
             "senderRole": myRole,
-            "receiverId": authorID, // The person who will receive the alert
+            "receiverId": authorID,
             "postId": postID,
             "timestamp": FieldValue.serverTimestamp(),
             "isRead": false

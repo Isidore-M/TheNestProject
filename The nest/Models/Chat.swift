@@ -9,9 +9,15 @@ struct Chat: Identifiable, Codable {
     var participantNames: [String: String]
     var lastMessage: String
     var timestamp: Date
+    var isGroupChat: Bool? = false
+    var groupTitle: String? = nil
     
-    func otherParticipantName(currentUID: String) -> String {
-        let otherID = participants.first(where: { $0 != currentUID }) ?? ""
-        return participantNames[otherID] ?? "Collaborator"
+    // The specific function the ChatRow above is calling:
+    func displayName(currentUserID: String) -> String {
+        if isGroupChat == true {
+            return groupTitle ?? "Project Team"
+        }
+        let otherId = participants.first(where: { $0 != currentUserID }) ?? ""
+        return participantNames[otherId] ?? "Collaborator"
     }
 }
