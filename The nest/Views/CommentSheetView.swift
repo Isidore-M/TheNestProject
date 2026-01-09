@@ -9,11 +9,13 @@ struct CommentSheetView: View {
 
     init(post: Post) {
         self.post = post
+        // Initialize the ViewModel with the specific Post ID
         _viewModel = StateObject(wrappedValue: CommentViewModel(postId: post.id ?? ""))
     }
 
     var body: some View {
         VStack(spacing: 0) {
+            // --- HANDLEBAR ---
             Capsule()
                 .fill(Color.gray.opacity(0.3))
                 .frame(width: 40, height: 5)
@@ -25,6 +27,7 @@ struct CommentSheetView: View {
             
             Divider()
 
+            // --- COMMENTS LIST ---
             ScrollView {
                 if viewModel.comments.isEmpty {
                     VStack(spacing: 15) {
@@ -39,13 +42,15 @@ struct CommentSheetView: View {
                 } else {
                     LazyVStack(alignment: .leading, spacing: 20) {
                         ForEach(viewModel.comments) { comment in
-                            CommentRow(comment: comment) // Now uses EnvironmentObject
+                            CommentRow(comment: comment)
+                                .environmentObject(appState) // Pass appState for live name updates
                         }
                     }
                     .padding()
                 }
             }
 
+            // --- INPUT FIELD ---
             VStack(spacing: 0) {
                 Divider()
                 HStack(spacing: 12) {
@@ -70,16 +75,21 @@ struct CommentSheetView: View {
         .onAppear { viewModel.fetchComments() }
     }
 
+    // --- FIXED FUNCTION ---
     func submitComment() {
+        guard let myUID = appState.currentUser?.uid else { return }
+        
+        // We now pass the post's author ID so the ViewModel can send a notification
         viewModel.postComment(
             text: commentText,
             user: appState.userProfile ?? [:],
-            uid: appState.currentUser?.uid ?? ""
+            uid: myUID,
+            authorIdOfPost: post.authorId ?? "" // This was the missing argument
         )
-        commentText = ""
+        
+        commentText = "" // Clear input
     }
 }
-
 // MARK: - UPDATED Comment Row Component
 struct CommentRow: View {
     let comment: Comment

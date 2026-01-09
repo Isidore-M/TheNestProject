@@ -92,30 +92,56 @@ struct PostCard: View {
         }
     }
     
+    // Replace your toggleLike and sendCollaborationRequest functions in PostCard.swift
+
     private func toggleLike() {
-        guard let postId = post.id else { return }
-        isLiked.toggle()
-        Firestore.firestore().collection("posts").document(postId).updateData([
-            "likesCount": FieldValue.increment(isLiked ? Int64(1) : Int64(-1))
-        ])
-    }
-    
-    private func sendCollaborationRequest() {
-        guard !isCollaborating else { return }
-        withAnimation { isCollaborating = true }
+        guard let myUID = appState.currentUser?.uid,
+              let myName = appState.userProfile?["name"] as? String,
+              let postID = post.id,
+              let authorID = post.authorId else { return }
         
         let db = Firestore.firestore()
-        let myId = appState.currentUser?.uid ?? ""
-        let myName = appState.userProfile?["name"] as? String ?? "New User"
-        let myRole = appState.userProfile?["role"] as? String ?? "Collaborator"
+        isLiked.toggle()
+        
+        // 1. Update the Post document count
+        db.collection("posts").document(postID).updateData([
+            "likesCount": FieldValue.increment(isLiked ? Int64(1) : Int64(-1))
+        ])
+        
+        // 2. ONLY create a notification if we are LIKING (not unliking)
+        // and if we aren't liking our own post
+        if isLiked && myUID != authorID {
+            let likeNotif: [String: Any] = [
+                "type": "like",
+                "senderId": myUID,
+                "senderName": myName,
+                "receiverId": authorID, // The owner of the post
+                "postId": postID,
+                "timestamp": FieldValue.serverTimestamp(),
+                "isRead": false
+            ]
+            db.collection("notifications").addDocument(data: likeNotif)
+        }
+    }
+
+    private func sendCollaborationRequest() {
+        guard !isCollaborating,
+              let myUID = appState.currentUser?.uid,
+              let myName = appState.userProfile?["name"] as? String,
+              let myRole = appState.userProfile?["role"] as? String,
+              let authorID = post.authorId,
+              let postID = post.id else { return }
+        
+        withAnimation { isCollaborating = true }
+        let db = Firestore.firestore()
         
         let notificationData: [String: Any] = [
             "type": "collaboration_request",
-            "senderId": myId,
+            "senderId": myUID,
             "senderName": myName,
             "senderRole": myRole,
-            "receiverId": post.authorId ?? "",
-            "postId": post.id ?? "",
+            "receiverId": authorID, // The person who will receive the alert
+            "postId": postID,
             "timestamp": FieldValue.serverTimestamp(),
             "isRead": false
         ]

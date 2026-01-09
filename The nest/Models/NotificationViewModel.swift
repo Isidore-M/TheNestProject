@@ -13,18 +13,21 @@ class NotificationViewModel: ObservableObject {
     func fetchNotifications() {
         guard let uid = Auth.auth().currentUser?.uid else { return }
         
+        // Ensure the collection name is "notifications" (all lowercase)
         listener = db.collection("notifications")
-            .whereField("receiverId", isEqualTo: uid)
+            .whereField("receiverId", isEqualTo: uid) // This is the filter
             .order(by: "timestamp", descending: true)
-            .addSnapshotListener { [weak self] querySnapshot, _ in
-                guard let self = self else { return }
+            .addSnapshotListener { [weak self] querySnapshot, error in
+                if let error = error {
+                    print("DEBUG: Notification listener error: \(error.localizedDescription)")
+                    return
+                }
                 
                 let docs = querySnapshot?.documents ?? []
-                self.notifications = docs.compactMap { try? $0.data(as: AppNotification.self) }
+                self?.notifications = docs.compactMap { try? $0.data(as: AppNotification.self) }
                 
-                // Update the red badge count
                 DispatchQueue.main.async {
-                    self.unreadCount = self.notifications.filter { !($0.isRead ?? false) }.count
+                    self?.unreadCount = self?.notifications.filter { !($0.isRead ?? false) }.count ?? 0
                 }
             }
     }

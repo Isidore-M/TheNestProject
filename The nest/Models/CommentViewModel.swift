@@ -24,7 +24,8 @@ class CommentViewModel: ObservableObject {
             }
     }
 
-    func postComment(text: String, user: [String: Any], uid: String) {
+    // Add 'authorIdOfPost' as a parameter so we know who to notify
+    func postComment(text: String, user: [String: Any], uid: String, authorIdOfPost: String) {
         let name = user["name"] as? String ?? "User"
         let role = user["role"] as? String ?? "Collaborator"
         
@@ -39,10 +40,24 @@ class CommentViewModel: ObservableObject {
         // 1. Add the comment
         db.collection("posts").document(postId).collection("comments").addDocument(data: commentData)
         
-        // 2. Increment the count on the main post
+        // 2. Increment count
         db.collection("posts").document(postId).updateData([
             "commentsCount": FieldValue.increment(Int64(1))
         ])
+        
+        // 3. Create Notification (if not commenting on your own post)
+        if uid != authorIdOfPost {
+            let commentNotif: [String: Any] = [
+                "type": "comment",
+                "senderId": uid,
+                "senderName": name,
+                "receiverId": authorIdOfPost,
+                "postId": postId,
+                "timestamp": FieldValue.serverTimestamp(),
+                "isRead": false
+            ]
+            db.collection("notifications").addDocument(data: commentNotif)
+        }
     }
 
     deinit {

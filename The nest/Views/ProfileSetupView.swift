@@ -5,8 +5,8 @@ import FirebaseFirestore
 struct ProfileSetupView: View {
     @EnvironmentObject var appState: AppState
     @State private var name = ""
-    @State private var nindo = ""
-    @State private var bio = ""
+    @State private var role = ""
+    @State private var portfolioLink = ""
     @State private var isSaving = false
     @State private var errorMessage = ""
 
@@ -18,17 +18,23 @@ struct ProfileSetupView: View {
                 
                 VStack(spacing: 12) {
                     TextField("Full Name", text: $name)
+                        .font(.custom("Poppins-Regular", size: 15))
                         .textFieldStyle(.roundedBorder)
-                    TextField("Your Role (e.g. Designer)", text: $nindo)
+                    
+                    TextField("Your Role (e.g. Designer)", text: $role)
+                        .font(.custom("Poppins-Regular", size: 15))
                         .textFieldStyle(.roundedBorder)
-                    TextEditor(text: $bio)
-                        .frame(height: 100)
-                        .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.gray.opacity(0.2)))
+                    
+                    TextField("Portfolio Link (Optional)", text: $portfolioLink)
+                        .font(.custom("Poppins-Regular", size: 15))
+                        .textFieldStyle(.roundedBorder)
+                        .autocapitalization(.none)
+                        .keyboardType(.URL)
                 }
                 .padding()
 
                 if !errorMessage.isEmpty {
-                    Text(errorMessage).foregroundColor(.red).font(.caption)
+                    Text(errorMessage).foregroundColor(.red).font(.custom("Poppins-Medium", size: 12))
                 }
 
                 Button(action: saveProfile) {
@@ -36,10 +42,10 @@ struct ProfileSetupView: View {
                         ProgressView().tint(.white)
                     } else {
                         Text("Finish Setup")
-                            .bold()
+                            .font(.custom("Poppins-Bold", size: 16))
                             .frame(maxWidth: .infinity)
                             .padding()
-                            .background(name.isEmpty ? Color.gray : Color.purple)
+                            .background(name.isEmpty ? Color.gray : Color.accentColor)
                             .foregroundColor(.white)
                             .cornerRadius(10)
                     }
@@ -51,34 +57,29 @@ struct ProfileSetupView: View {
     }
 
     func saveProfile() {
-        // 1. Get the UID directly from the source of truth
-        guard let user = Auth.auth().currentUser else {
-            print("DEBUG: No user is actually logged in")
-            return
-        }
-        
+        guard let user = Auth.auth().currentUser else { return }
         let uid = user.uid
-        let db = Firestore.firestore()
+        let email = user.email ?? "" // Auto-fetch email from Auth
         
         self.isSaving = true
+        let db = Firestore.firestore()
         
-        // 2. Simplest possible data set to test the connection
-        let testData: [String: Any] = [
+        let profileData: [String: Any] = [
             "uid": uid,
             "name": name,
-            "hasCompletedSetup": true
+            "role": role,
+            "email": email,
+            "portfolioLink": portfolioLink,
+            "hasCompletedSetup": true,
+            "createdAt": FieldValue.serverTimestamp()
         ]
         
-        // 3. FORCE the path to 'users/UID'
-        // Ensure "users" is lowercase here and in your Firebase Console
-        db.collection("users").document(uid).setData(testData) { error in
+        db.collection("users").document(uid).setData(profileData) { error in
             DispatchQueue.main.async {
                 self.isSaving = false
                 if let error = error {
-                    print("DEBUG: Permission Error: \(error.localizedDescription)")
                     self.errorMessage = error.localizedDescription
                 } else {
-                    print("DEBUG: Success! Connection established.")
                     self.appState.currentScreen = .mainFeed
                 }
             }
