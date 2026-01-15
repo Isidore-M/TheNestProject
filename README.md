@@ -5,9 +5,8 @@ The Nest is a minimal, collaborative hub built for the modern creator.
 It’s designed to bridge the gap between "I have an idea" and "We built a team." 
 No noise, just high-signal collaboration for designers and developers.
 
-<p align="center">
-  <img src="https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExZWN3ajByZ3RxMnhmaTR0cmgyOWJkcGJnc2syZTJhaG5zNnM1NTN4aSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/ED9SwjneauuCA/giphy.gif" width="300" alt="The Nest Animation" />
-</p>
+![The Nest Colony](https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExZWN3ajByZ3RxMnhmaTR0cmgyOWJkcGJnc2syZTJhaG5zNnM1NTN4aSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/ED9SwjneauuCA/giphy.gif)
+
 
 **🎨 Design Philosophy**
 
@@ -38,17 +37,6 @@ making it easy to find your perfect creative match.
 A frictionless, multi-step flow that gets you from "Sign Up" to "Exploring" in under 60 seconds.
 
 **🏗 The Logic**
-
-// The 'Master Sync' logic: Atomic updates for a clean state
-func acceptMemberToTeam(projectID: String, userID: String, userName: String) async throws {
-    let batch = db.batch()
-    batch.updateData([
-        "members": FieldValue.arrayUnion([userID]),
-        "memberNames.\(userID)": userName
-    ], forDocument: projectRef)
-    
-    try await batch.commit()
-}
 
 The app is engineered for data integrity. The TeamManager ensures that when you accept a collaborator,
 the database updates are atomic—meaning your project list and notification center stay perfectly in sync, every time.
