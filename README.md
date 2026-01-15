@@ -5,7 +5,9 @@ The Nest is a minimal, collaborative hub built for the modern creator.
 It’s designed to bridge the gap between "I have an idea" and "We built a team." 
 No noise, just high-signal collaboration for designers and developers.
 
-<p align="center"> <img src="https://media.giphy.com/media/your-animation-link/giphy.gif](https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExbXBjdGRybjdtaWcwdG11Z29reDA2dzJyYjd0Ymc3emg3NnBsamdmdSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/9yssegcqq1WDlPKdP4/giphy.gif)" width="80%" alt="Smooth Navigation Animation" /> </p>
+<p align="center">
+  <img src="https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExZWN3ajByZ3RxMnhmaTR0cmgyOWJkcGJnc2syZTJhaG5zNnM1NTN4aSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/ED9SwjneauuCA/giphy.gif" width="300" alt="The Nest Animation" />
+</p>
 
 **🎨 Design Philosophy**
 
