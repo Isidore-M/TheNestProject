@@ -17,7 +17,7 @@ struct TeamListRow: View {
                         .fill(Color.accentColor.opacity(0.1))
                         .frame(width: 50, height: 50)
                     Image(systemName: "briefcase.fill")
-                        .foregroundColor(.accentColor)
+                        .foregroundColor(.accent)
                 }
                 
                 VStack(alignment: .leading, spacing: 4) {

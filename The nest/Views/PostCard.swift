@@ -30,6 +30,8 @@ struct PostCard: View {
                             .font(.custom("Poppins-Medium", size: 12))
                             .foregroundColor(.accentColor)
                         
+                        Spacer()
+                        
                         // RESTORED: Relative Timestamp
                         if let date = post.timestamp {
                             Text("•")
@@ -40,7 +42,7 @@ struct PostCard: View {
                         }
                     }
                 }
-                Spacer()
+               
             }
             
             // --- CONTENT ---
@@ -87,7 +89,7 @@ struct PostCard: View {
                             .font(.custom("Poppins-Bold", size: 13))
                             .padding(.horizontal, 18)
                             .padding(.vertical, 8)
-                            .background(isCollaborating ? Color.green : Color.accentColor)
+                            .background(isCollaborating ? Color.green : Color.accent)
                             .foregroundColor(.white)
                             .cornerRadius(25)
                     }

@@ -14,7 +14,7 @@ struct SignInView: View {
                 // --- 1. HEADER ---
                 VStack(spacing: 12) {
                     Text("Welcome back")
-                        .font(.custom("Poppins-Bold", size: 32))
+                        .font(.system(size: 28, weight: .bold))
                     
                     Text("Let’s get you back to creating, sharing, and connecting with your community.")
                         .font(.custom("Poppins-Regular", size: 14))
@@ -26,7 +26,7 @@ struct SignInView: View {
                 
                 // --- 2. ILLUSTRATION ---
                 // Ensure "login_illustration" is added to your Assets.xcassets
-                Image("login")
+                Image("login-image")
                     .resizable()
                     .scaledToFit()
                     .frame(height: 200)

@@ -11,55 +11,90 @@ struct ProfileSetupView: View {
     @State private var errorMessage = ""
 
     var body: some View {
-        NavigationStack {
-            VStack(spacing: 20) {
-                Text("Complete Profile")
-                    .font(.custom("Poppins-Bold", size: 24))
-                
-                VStack(spacing: 12) {
-                    TextField("Full Name", text: $name)
-                        .font(.custom("Poppins-Regular", size: 15))
-                        .textFieldStyle(.roundedBorder)
-                    
-                    TextField("Your Role (e.g. Designer)", text: $role)
-                        .font(.custom("Poppins-Regular", size: 15))
-                        .textFieldStyle(.roundedBorder)
-                    
-                    TextField("Portfolio Link (Optional)", text: $portfolioLink)
-                        .font(.custom("Poppins-Regular", size: 15))
-                        .textFieldStyle(.roundedBorder)
-                        .autocapitalization(.none)
-                        .keyboardType(.URL)
-                }
-                .padding()
-
-                if !errorMessage.isEmpty {
-                    Text(errorMessage).foregroundColor(.red).font(.custom("Poppins-Medium", size: 12))
-                }
-
-                Button(action: saveProfile) {
-                    if isSaving {
-                        ProgressView().tint(.white)
-                    } else {
-                        Text("Finish Setup")
-                            .font(.custom("Poppins-Bold", size: 16))
-                            .frame(maxWidth: .infinity)
-                            .padding()
-                            .background(name.isEmpty ? Color.gray : Color.accent)
-                            .foregroundColor(.white)
-                            .cornerRadius(10)
+        ZStack {
+            // Background color matching your design
+            Color(white: 0.98).ignoresSafeArea()
+            
+            ScrollView {
+                VStack(spacing: 24) {
+                    // Header Section
+                    VStack(spacing: 8) {
+                        Text("Create a profile")
+                            .font(.system(size: 28, weight: .bold))
+                        Text("Tell us a bit about yourself")
+                            .font(.system(size: 16))
+                            .foregroundColor(.secondary)
                     }
+                    .padding(.top, 40)
+
+                    // Avatar Placeholder
+                    Image(systemName: "person.crop.circle.fill")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 120, height: 120)
+                        .foregroundColor(.gray.opacity(0.3))
+                        .padding(.vertical, 10)
+
+                    // Form Fields
+                    VStack(alignment: .leading, spacing: 16) {
+                        setupInputField(label: "Names", placeholder: "First and last name", text: $name)
+                        setupInputField(label: "Your Role", placeholder: "e.g. Designer, Developer", text: $role)
+                        setupInputField(label: "Portfolio Link", placeholder: "https://yourportfolio.com", text: $portfolioLink)
+                    }
+                    .padding(.horizontal)
+
+                    if !errorMessage.isEmpty {
+                        Text(errorMessage)
+                            .foregroundColor(.red)
+                            .font(.system(size: 14))
+                            .padding(.horizontal)
+                    }
+
+                    // Action Button
+                    Button(action: saveProfile) {
+                        if isSaving {
+                            ProgressView().tint(.white)
+                        } else {
+                            Text("Next")
+                                .font(.headline)
+                                .frame(maxWidth: .infinity)
+                                .padding()
+                                .background(name.isEmpty ? Color.gray : Color.black.opacity(0.9))
+                                .foregroundColor(.white)
+                                .cornerRadius(30) // Pill shape from design
+                        }
+                    }
+                    .padding(.horizontal)
+                    .padding(.top, 20)
+                    .disabled(name.isEmpty || isSaving)
                 }
-                .disabled(name.isEmpty || isSaving)
-                .padding()
+                .padding(.bottom, 30)
             }
+        }
+    }
+
+    // Custom Input Field to match the image design
+    @ViewBuilder
+    func setupInputField(label: String, placeholder: String, text: Binding<String>) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text(label)
+                .font(.system(size: 14, weight: .medium))
+            
+            TextField(placeholder, text: text)
+                .padding()
+                .background(Color.white)
+                .cornerRadius(12)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 12)
+                        .stroke(Color.gray.opacity(0.1), lineWidth: 1)
+                )
         }
     }
 
     func saveProfile() {
         guard let user = Auth.auth().currentUser else { return }
         let uid = user.uid
-        let email = user.email ?? "" // Auto-fetch email from Auth
+        let email = user.email ?? ""
         
         self.isSaving = true
         let db = Firestore.firestore()
@@ -80,7 +115,10 @@ struct ProfileSetupView: View {
                 if let error = error {
                     self.errorMessage = error.localizedDescription
                 } else {
-                    self.appState.currentScreen = .mainFeed
+                    // FIX: Navigate to .home to match AppState.Screen
+                    withAnimation {
+                        self.appState.currentScreen = .home
+                    }
                 }
             }
         }

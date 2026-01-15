@@ -3,25 +3,27 @@ import FirebaseFirestore
 
 struct ProfilePreview: View {
     let userID: String
-    let notificationID: String // The ID of the alert to delete/update
-    let projectID: String      // The specific project the user wants to join
+    let notificationID: String
+    let projectID: String
     
     @EnvironmentObject var appState: AppState
     @StateObject private var teamManager = TeamManager()
     
+    // State to trigger the new selection modal
+    @State private var showingTeamSheet = false
+    
     @State private var userProfile: [String: Any]?
     @State private var isProcessing = false
-    @State private var showAddConfirmation = false // Added for safety alert
+    @State private var errorMessage = ""
     @Environment(\.dismiss) var dismiss
 
     var body: some View {
         NavigationStack {
             VStack(spacing: 0) {
                 ScrollView {
-                    VStack(spacing: 30) {
-                        
-                        // --- 1. HEADER: IDENTITY ---
+                    VStack(spacing: 25) {
                         if let profile = userProfile {
+                            // --- 1. IDENTITY ---
                             VStack(spacing: 15) {
                                 AvatarView(name: profile["name"] as? String ?? "U", size: 100)
                                     .shadow(color: .black.opacity(0.05), radius: 10, y: 5)
@@ -37,7 +39,17 @@ struct ProfilePreview: View {
                             }
                             .padding(.top, 20)
                             
-                            // --- 2. CONTACT & LINKS ---
+                            // --- 2. BIO SECTION ---
+                            if let bio = profile["bio"] as? String, !bio.isEmpty {
+                                profileSection(title: "About", content: bio)
+                            }
+
+                            // --- 3. INTERESTS SECTION ---
+                            if let interests = profile["interests"] as? String, !interests.isEmpty {
+                                profileSection(title: "Interests & Focus", content: interests, isAccent: true)
+                            }
+                            
+                            // --- 4. CONTACT & LINKS ---
                             VStack(spacing: 16) {
                                 ProfileInfoRow(
                                     icon: "envelope.fill",
@@ -58,6 +70,7 @@ struct ProfilePreview: View {
                             .padding()
                             .background(Color.gray.opacity(0.05))
                             .cornerRadius(20)
+                            
                         } else {
                             ProgressView("Fetching details...").padding(.top, 100)
                         }
@@ -65,10 +78,17 @@ struct ProfilePreview: View {
                     .padding(20)
                 }
 
-                // --- 3. BOTTOM ACTIONS ---
+                // --- 5. BOTTOM ACTIONS ---
                 VStack(spacing: 12) {
-                    // ADD BUTTON: Triggers Confirmation Alert
-                    Button(action: { showAddConfirmation = true }) {
+                    if !errorMessage.isEmpty {
+                        Text(errorMessage)
+                            .font(.caption)
+                            .foregroundColor(.red)
+                            .padding(.bottom, 4)
+                    }
+
+                    // CHANGED: Now opens the TeamSelectionSheet instead of an alert
+                    Button(action: { showingTeamSheet = true }) {
                         HStack {
                             if isProcessing {
                                 ProgressView().tint(.white)
@@ -82,81 +102,66 @@ struct ProfilePreview: View {
                         .background(isProcessing ? Color.gray : Color.accentColor)
                         .foregroundColor(.white)
                         .cornerRadius(15)
-                        .shadow(color: Color.accentColor.opacity(0.3), radius: 10, x: 0, y: 5)
                     }
                     .disabled(isProcessing || userProfile == nil)
 
-                    // REJECT BUTTON
                     Button(action: rejectMember) {
                         Text("Reject Request")
                             .font(.custom("Poppins-Bold", size: 14))
                             .foregroundColor(.red)
-                            .padding(.vertical, 8)
                     }
                     .disabled(isProcessing)
                 }
                 .padding(20)
                 .background(Color.white)
+                .shadow(color: .black.opacity(0.05), radius: 10, y: -5)
             }
             .navigationTitle("Profile Details")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Close") { dismiss() }
-                        .font(.custom("Poppins-Medium", size: 15))
                 }
             }
-            // --- THE CONFIRMATION ALERT ---
-            .alert("Add to Team?", isPresented: $showAddConfirmation) {
-                Button("Cancel", role: .cancel) { }
-                Button("Confirm Add") {
-                    acceptMember()
-                }
-            } message: {
-                let name = userProfile?["name"] as? String ?? "this user"
-                Text("Are you sure you want to add \(name) to your project team? This will grant them access to your group chat and project details.")
+            // NEW: Modal sheet for project selection
+            .sheet(isPresented: $showingTeamSheet) {
+                TeamSelectionSheet(
+                    targetUserID: userID,
+                    targetUserName: userProfile?["name"] as? String ?? "User",
+                    notificationID: notificationID
+                )
+                .environmentObject(appState)
             }
-            .task {
-                await fetchTargetUser()
-            }
+            .task { await fetchTargetUser() }
         }
     }
 
-    // MARK: - Logic Helpers
+    @ViewBuilder
+    func profileSection(title: String, content: String, isAccent: Bool = false) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text(title)
+                .font(.custom("Poppins-Bold", size: 14))
+                .foregroundColor(.secondary)
+                .textCase(.uppercase)
+            Text(content)
+                .font(.custom("Poppins-Medium", size: 15))
+                .foregroundColor(isAccent ? .accentColor : .primary)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding()
+        .background(isAccent ? Color.accentColor.opacity(0.05) : Color.gray.opacity(0.05))
+        .cornerRadius(15)
+    }
 
     private func fetchTargetUser() async {
         let db = Firestore.firestore()
-        let doc = try? await db.collection("users").document(userID).getDocument()
-        if let data = doc?.data() {
-            self.userProfile = data
-        }
-    }
-
-    private func acceptMember() {
-        guard let name = userProfile?["name"] as? String else { return }
-        isProcessing = true
-        
-        Task {
-            do {
-                // Calls the TeamManager Master Sync logic
-                try await teamManager.acceptMemberToTeam(
-                    projectID: projectID,
-                    userID: userID,
-                    userName: name,
-                    notificationID: notificationID
-                )
-                isProcessing = false
-                dismiss() // Success
-            } catch {
-                print("DEBUG: Error accepting: \(error.localizedDescription)")
-                isProcessing = false
-            }
+        if let doc = try? await db.collection("users").document(userID).getDocument() {
+            self.userProfile = doc.data()
         }
     }
 
     private func rejectMember() {
         isProcessing = true
-        // Simply delete the notification to "reject" the request
         Firestore.firestore().collection("notifications").document(notificationID).delete { _ in
             isProcessing = false
             dismiss()

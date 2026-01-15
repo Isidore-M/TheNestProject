@@ -1,11 +1,3 @@
-//
-//  OnboardingContainerView.swift
-//  The nest
-//
-//  Created by Eezy Mongo on 2026-01-09.
-//
-
-import Foundation
 import SwiftUI
 
 struct OnboardingContainerView: View {
@@ -14,11 +6,11 @@ struct OnboardingContainerView: View {
     
     var body: some View {
         ZStack {
-            // Background color matches the illustration backgrounds
+            // Background color logic
             backgroundColor.ignoresSafeArea()
             
             VStack(spacing: 0) {
-                // 1. Illustration Area
+                // 1. ILLUSTRATION AREA
                 TabView(selection: $currentStep) {
                     OnboardingIllustration(imageName: "onboard1").tag(0)
                     OnboardingIllustration(imageName: "onboard2").tag(1)
@@ -27,15 +19,14 @@ struct OnboardingContainerView: View {
                 .tabViewStyle(.page(indexDisplayMode: .never))
                 .frame(maxHeight: .infinity)
                 
-                // 2. The Content Card
+                // 2. THE CONTENT CARD
                 VStack(spacing: 30) {
-                    // Progress Indicator (The three bars)
+                    // Progress Indicator
                     HStack(spacing: 8) {
                         ForEach(0..<3) { index in
                             RoundedRectangle(cornerRadius: 2)
                                 .fill(currentStep == index ? Color.accentColor : Color.gray.opacity(0.2))
                                 .frame(width: currentStep == index ? 40 : 20, height: 4)
-                                .animation(.spring(), value: currentStep)
                         }
                     }
                     .padding(.top, 40)
@@ -51,6 +42,7 @@ struct OnboardingContainerView: View {
                             .foregroundColor(.secondary)
                             .multilineTextAlignment(.center)
                             .padding(.horizontal, 40)
+                            .fixedSize(horizontal: false, vertical: true) // Prevents jumping
                     }
                     
                     Spacer()
@@ -68,13 +60,11 @@ struct OnboardingContainerView: View {
         }
     }
     
-    // MARK: - Components
-    
     private var onboardingButtons: some View {
         HStack {
             if currentStep < 2 {
                 Button("Skip") {
-                    withAnimation { currentStep = 2 }
+                    withAnimation(.spring()) { currentStep = 2 }
                 }
                 .font(.custom("Poppins-Medium", size: 16))
                 .foregroundColor(.black)
@@ -83,7 +73,7 @@ struct OnboardingContainerView: View {
                 Spacer()
                 
                 Button(action: {
-                    withAnimation { currentStep += 1 }
+                    withAnimation(.spring()) { currentStep += 1 }
                 }) {
                     Image(systemName: "arrow.right")
                         .font(.system(size: 20, weight: .bold))
@@ -93,41 +83,37 @@ struct OnboardingContainerView: View {
                 }
                 .padding(.trailing, 40)
             } else {
-                // Final Screen "Start Exploring"
+                // FIXED: This is the only place hasSeenOnboarding should ever change
                 Button(action: {
-                    // Logic to move to login or home
+                    appState.completeOnboarding()
                 }) {
                     Text("Start Exploring")
                         .font(.custom("Poppins-Bold", size: 18))
                         .foregroundColor(.white)
                         .frame(maxWidth: .infinity)
                         .frame(height: 60)
-                        .background(Color(red: 0.1, green: 0.1, blue: 0.1)) // Dark gray from design
+                        .background(Color(red: 0.11, green: 0.11, blue: 0.11))
                         .cornerRadius(30)
                 }
                 .padding(.horizontal, 40)
+                .transition(.opacity.combined(with: .scale))
             }
         }
     }
     
-    // MARK: - Data
+    // Background Colors from your designs
     private var backgroundColor: Color {
         switch currentStep {
-        case 0: return Color(red: 0.85, green: 0.82, blue: 0.95) // Light Purple
-        case 1: return Color(red: 0.75, green: 0.88, blue: 0.95) // Light Blue
-        default: return Color(red: 0.94, green: 0.88, blue: 0.98) // Soft Lavender
+        case 0: return Color(red: 0.93, green: 0.91, blue: 0.99)
+        case 1: return Color(red: 0.88, green: 0.94, blue: 0.99)
+        default: return Color(red: 0.94, green: 0.91, blue: 0.97)
         }
     }
-    
-    private let onboardingTitles = [
-        "Welcome to the nest",
-        "Discover Ideas & Collaborate",
-        "Track & Grow Your Projects"
-    ]
-    
+
+    private let onboardingTitles = ["Welcome to the nest", "Discover Ideas & Collaborate", "Track & Grow Your Projects"]
     private let onboardingSubtitles = [
-        "Connect, collaborate, and bring your ideas to life. Find people with the skills and passion to join your projects.",
-        "Browse exciting projects, express interest, and chat with potential collaborators.",
-        "Follow your ideas, celebrate progress, and build amazing projects together."
+        "Connect, collaborate, and bring your ideas to life.",
+        "Browse exciting projects and chat with collaborators.",
+        "Follow your ideas and build amazing projects together."
     ]
 }
