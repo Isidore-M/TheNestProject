@@ -11,27 +11,27 @@
   <img src="https://img.shields.io/badge/visionOS-2.5-000000?style=flat-square&logo=apple&logoColor=white" alt="visionOS 2.5" />
 </p>
 
-**🪺 The Nest**
+**The Nest**
 
 Where ideas find their colony.
 The Nest is a minimal, collaborative hub built for the modern creator. 
 It’s designed to bridge the gap between "I have an idea" and "We built a team." 
 No noise, just high-signal collaboration for designers and developers.
 
-**🎨 Design Philosophy**
+**Design Philosophy**
 
 The UI is built on a foundation of clarity and soft-minimalism.
 Type: Poppins (Bold for hierarchy, Medium for legibility).
 Palette: Off-white backgrounds (#F5F5F5) paired with deep blacks and a signature Gold accent.
 Feel: Tactile interactions, subtle shadows, and a "breathable" layout that stays out of the way of the content.
 
-**🛠 Built With**
+** Built With**
 
 SwiftUI: Declarative UI for a fluid, reactive experience.
 Firebase: Real-time data sync for a "zero-latency" feel.
 Atomic Sync: Custom batch logic to handle team admissions and notifications in a single heartbeat.
 
-**✨ The Experience**
+** The Experience**
 
 01. Discovery
 
@@ -66,12 +66,12 @@ A frictionless, multi-step flow that gets you from "Sign Up" to "Exploring" in u
 ![image alt](https://github.com/Isidore-M/TheNestProject/blob/c72ec42867ccb3be17ffbd2efc7f1fdcde5aee6c/team-management.jpg)
 
 
-**🏗 The Logic**
+**The Logic**
 
 The app is engineered for data integrity. The TeamManager ensures that when you accept a collaborator,
 the database updates are atomic—meaning your project list and notification center stay perfectly in sync, every time.
 
-**🪴 Growth Plan**
+**Growth Plan**
 
 **Phase 1: Foundation (Current)**
 
