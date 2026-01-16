@@ -25,22 +25,36 @@ Atomic Sync: Custom batch logic to handle team admissions and notifications in a
 
 01. Discovery
 
-![image alt]()
-Browse a curated feed of project cards. See who's leading, what they're building, and who’s already in the colony.
 
+Browse a curated feed of project cards. See who's leading, what they're building, and who’s already in the colony.
 
 02. Collaborative Profiles
 
 Traditional resumes are boring. The Nest uses skill-based profiles that highlight your interests and portfolio links, 
 making it easy to find your perfect creative match.
 
-![image alt]()
+![image alt](https://github.com/Isidore-M/TheNestProject/blob/c72ec42867ccb3be17ffbd2efc7f1fdcde5aee6c/profile1.jpg)
+
 
 03. Seamless Onboarding
 
 A frictionless, multi-step flow that gets you from "Sign Up" to "Exploring" in under 60 seconds.
 
-![image alt]()
+![image alt](https://github.com/Isidore-M/TheNestProject/blob/c72ec42867ccb3be17ffbd2efc7f1fdcde5aee6c/onboarding-frames.jpg)
+
+04. Post creation
+![image alt](https://github.com/Isidore-M/TheNestProject/blob/c72ec42867ccb3be17ffbd2efc7f1fdcde5aee6c/post-creation.jpg)
+
+
+05. Notification management
+
+![image alt](https://github.com/Isidore-M/TheNestProject/blob/c72ec42867ccb3be17ffbd2efc7f1fdcde5aee6c/notification.jpg)
+
+
+6. Teams management
+
+![image alt](https://github.com/Isidore-M/TheNestProject/blob/c72ec42867ccb3be17ffbd2efc7f1fdcde5aee6c/team-management.jpg)
+
 
 **🏗 The Logic**
 
