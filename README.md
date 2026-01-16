@@ -27,10 +27,15 @@ No noise, just high-signal collaboration for designers and developers.
 **Design Philosophy**
 ---------------------------------------------------------------------------------------------------------
 
-The UI is built on a foundation of clarity and soft-minimalism.
-Type: Poppins (Bold for hierarchy, Medium for legibility).
-Palette: Off-white backgrounds (#F5F5F5) paired with deep blacks and a signature Gold accent.
-Feel: Tactile interactions, subtle shadows, and a "breathable" layout that stays out of the way of the content.
+**Typography:**
+
+We chose Poppins for its geometric clarity and friendly character. It provides a modern, approachable feel that remains legible across mobile and spatial interfaces.
+
+**The Palette:**
+
+A breathable off-white canvas (#F5F5F5) paired with high-contrast blacks (#121212) and a signature purple accent (#735D9D). This creates a "premium" feel without the clutter of heavy gradients or shadows.
+
+Tactile Feedback: Every interaction is optimized for iOS 18.5 haptics. Buttons feel "pressable," and transitions guide the eye through the project's logical flow.
 ---------------------------------------------------------------------------------------------------------
 ** Built With**
 ---------------------------------------------------------------------------------------------------------
