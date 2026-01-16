@@ -10,6 +10,11 @@
   
   <img src="https://img.shields.io/badge/visionOS-2.5-000000?style=flat-square&logo=apple&logoColor=white" alt="visionOS 2.5" />
 </p>
+
+
+
+
+
 ---------------------------------------------------------------------------------------------------------
 **The Nest**
 
@@ -146,8 +151,7 @@ Portfolio API: One-click sync with Behance, GitHub, and Dribbble.
 Colony Analytics: Track your project's growth and engagement trends.
 Stripe Integration: Handle freelance milestone payments directly within the project team.
 
-
-
+---------------------------------------------------------------------------------------------------------
 **Contact**
-
+---------------------------------------------------------------------------------------------------------
 [Isidore Manga] – Freelance UI/UX Designer & iOS Developer Portfolio: [www.isidoremanga.com] | 
