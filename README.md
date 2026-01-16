@@ -25,16 +25,22 @@ Atomic Sync: Custom batch logic to handle team admissions and notifications in a
 
 01. Discovery
 
+![image alt]()
 Browse a curated feed of project cards. See who's leading, what they're building, and who’s already in the colony.
+
 
 02. Collaborative Profiles
 
 Traditional resumes are boring. The Nest uses skill-based profiles that highlight your interests and portfolio links, 
 making it easy to find your perfect creative match.
 
+![image alt]()
+
 03. Seamless Onboarding
 
 A frictionless, multi-step flow that gets you from "Sign Up" to "Exploring" in under 60 seconds.
+
+![image alt]()
 
 **🏗 The Logic**
 
