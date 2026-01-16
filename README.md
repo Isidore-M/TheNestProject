@@ -31,6 +31,17 @@ SwiftUI: Declarative UI for a fluid, reactive experience.
 Firebase: Real-time data sync for a "zero-latency" feel.
 Atomic Sync: Custom batch logic to handle team admissions and notifications in a single heartbeat.
 
+
+**Installation & Setup**
+
+-Clone the repository: git clone https://github.com/yourusername/the-nest.git
+
+-Open TheNest.xcodeproj in Xcode 16.0+.
+
+-Add your GoogleService-Info.plist to the project root.
+
+-Build and run on an iOS 18.5 or visionOS 2.5 simulator.
+
 ** The Experience**
 
 01. Discovery
@@ -91,3 +102,9 @@ Spatial Nest (visionOS): A dedicated environment for immersive project planning.
 Portfolio API: One-click sync with Behance, GitHub, and Dribbble.
 Colony Analytics: Track your project's growth and engagement trends.
 Stripe Integration: Handle freelance milestone payments directly within the project team.
+
+
+
+**Contact**
+
+[Isidore Manga] – Freelance UI/UX Designer & iOS Developer Portfolio: [www.isidoremanga.com] | 
