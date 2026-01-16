@@ -34,7 +34,7 @@ Atomic Sync: Custom batch logic to handle team admissions and notifications in a
 
 **Installation & Setup**
 
--Clone the repository: git clone https://github.com/yourusername/the-nest.git](https://github.com/Isidore-M/TheNestProject.git
+-Clone the repository: **git clone https://github.com/Isidore-M/TheNestProject.git**
 
 -Open TheNest.xcodeproj in Xcode 16.0+.
 
