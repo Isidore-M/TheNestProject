@@ -1,12 +1,15 @@
+
+
+
+
+
+
 **🪺 The Nest**
 
 Where ideas find their colony.
 The Nest is a minimal, collaborative hub built for the modern creator. 
 It’s designed to bridge the gap between "I have an idea" and "We built a team." 
 No noise, just high-signal collaboration for designers and developers.
-
-![The Nest Colony](https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExZWN3ajByZ3RxMnhmaTR0cmgyOWJkcGJnc2syZTJhaG5zNnM1NTN4aSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/ED9SwjneauuCA/giphy.gif)
-
 
 **🎨 Design Philosophy**
 
