@@ -1,5 +1,15 @@
+
 ![image alt](https://github.com/Isidore-M/TheNestProject/blob/6f11cc797ac4b8b00da35714fab3f78288f3d42d/Read-me-banner.jpg)
 
+<p align="center">
+  <img src="https://img.shields.io/badge/SwiftUI-F05138?style=flat-square&logo=swift&logoColor=white" alt="SwiftUI" />
+  
+  <img src="https://img.shields.io/badge/Firebase-f5b041?style=flat-square&logo=firebase&logoColor=white" alt="Firebase" />
+  
+  <img src="https://img.shields.io/badge/iOS-18.5%2B-000000?style=flat-square&logo=apple&logoColor=white" alt="iOS 18.5+" />
+  
+  <img src="https://img.shields.io/badge/visionOS-2.5-000000?style=flat-square&logo=apple&logoColor=white" alt="visionOS 2.5" />
+</p>
 
 **🪺 The Nest**
 
