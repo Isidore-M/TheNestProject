@@ -10,7 +10,7 @@
   
   <img src="https://img.shields.io/badge/visionOS-2.5-000000?style=flat-square&logo=apple&logoColor=white" alt="visionOS 2.5" />
 </p>
-
+---------------------------------------------------------------------------------------------------------
 **The Nest**
 
 Where ideas find their colony.
@@ -18,21 +18,25 @@ The Nest is a minimal, collaborative hub built for the modern creator.
 It’s designed to bridge the gap between "I have an idea" and "We built a team." 
 No noise, just high-signal collaboration for designers and developers.
 
+---------------------------------------------------------------------------------------------------------
 **Design Philosophy**
+---------------------------------------------------------------------------------------------------------
 
 The UI is built on a foundation of clarity and soft-minimalism.
 Type: Poppins (Bold for hierarchy, Medium for legibility).
 Palette: Off-white backgrounds (#F5F5F5) paired with deep blacks and a signature Gold accent.
 Feel: Tactile interactions, subtle shadows, and a "breathable" layout that stays out of the way of the content.
-
+---------------------------------------------------------------------------------------------------------
 ** Built With**
+---------------------------------------------------------------------------------------------------------
 
 SwiftUI: Declarative UI for a fluid, reactive experience.
 Firebase: Real-time data sync for a "zero-latency" feel.
 Atomic Sync: Custom batch logic to handle team admissions and notifications in a single heartbeat.
 
-
+---------------------------------------------------------------------------------------------------------
 **Installation & Setup**
+---------------------------------------------------------------------------------------------------------
 
 -Clone the repository: **git clone https://github.com/Isidore-M/TheNestProject.git**
 
@@ -41,13 +45,14 @@ Atomic Sync: Custom batch logic to handle team admissions and notifications in a
 -Add your GoogleService-Info.plist to the project root.
 
 -Build and run on an iOS 18.5 or visionOS 2.5 simulator.
-
-** The Experience**
+---------------------------------------------------------------------------------------------------------
+**The Experience**
+---------------------------------------------------------------------------------------------------------
 
 01. Discovery
 ---------------------------------------------------------------------------------------------------------
 Browse a curated feed of project cards. See who's leading, what they're building, and who’s already in the colony.
-
+---------------------------------------------------------------------------------------------------------
 02. Collaborative Profiles
 ---------------------------------------------------------------------------------------------------------
 
@@ -56,13 +61,14 @@ making it easy to find your perfect creative match.
 
 ![image alt](https://github.com/Isidore-M/TheNestProject/blob/c72ec42867ccb3be17ffbd2efc7f1fdcde5aee6c/profile1.jpg)
 
-
+---------------------------------------------------------------------------------------------------------
 03. Seamless Onboarding
 ---------------------------------------------------------------------------------------------------------
 A frictionless, multi-step flow that gets you from "Sign Up" to "Exploring" in under 60 seconds.
 
 ![image alt](https://github.com/Isidore-M/TheNestProject/blob/c72ec42867ccb3be17ffbd2efc7f1fdcde5aee6c/onboarding-frames.jpg)
 
+---------------------------------------------------------------------------------------------------------
 04. Post creation
 ---------------------------------------------------------------------------------------------------------
 In The Nest, every project begins with a focused entry point. The Post Creation flow is designed to be frictionless, 
@@ -72,33 +78,39 @@ It is initialized with a timestamp, authorId, and a memberNames map that automat
 
 ![image alt](https://github.com/Isidore-M/TheNestProject/blob/c72ec42867ccb3be17ffbd2efc7f1fdcde5aee6c/post-creation.jpg)
 
-
+---------------------------------------------------------------------------------------------------------
 05. Notification management
 ---------------------------------------------------------------------------------------------------------
+
 Notification management in The Nest is more than just a list of alerts; it’s a gatekeeper for high-signal collaboration. 
 
 When a user requests to join a project, the leader receives a Collaboration Request notification.
 
 **-The Experience:**
+
 Leaders can tap a notification to open a Profile Preview, viewing the candidate's bio, skills, and portfolio without leaving the activity center.
 
 **The Logic:**
+
 We utilize Atomic Batching for the acceptance flow.the user is added to the project roster, their name is mapped , 
 and the notification is deleted to maintain a "Zero-Inbox" workspace.
 
 ![image alt](https://github.com/Isidore-M/TheNestProject/blob/c72ec42867ccb3be17ffbd2efc7f1fdcde5aee6c/notification.jpg)
 
-
-6. Teams management
 ---------------------------------------------------------------------------------------------------------
+06. Teams management
+---------------------------------------------------------------------------------------------------------
+
 Once a team is formed, the Teams Management module provides a bird’s-eye view of the project's current collaborators. 
 This is the "Engine Room" of the project where the leader manages his team.
 
 **The Experience:**
+
 A minimal list view displaying every member currently "In the Nest." 
 project's Leaders have the power to remove collaborators or add new ones on the fly via the Team Selection Sheet.
 
 **The Logic:**
+
 To ensure the UI remains  smooth, we rely on a dual-data structure: an members array for fast queries and a memberNames dictionary for name display. 
 This avoids expensive "N+1" network calls to fetch every individual profile, keeping the app lightweight even as the colony grows.
 
@@ -110,7 +122,9 @@ This avoids expensive "N+1" network calls to fetch every individual profile, kee
 The app is engineered for data integrity. The TeamManager ensures that when you accept a collaborator,
 the database updates are atomic—meaning your project list and notification center stay perfectly in sync, every time.
 
+---------------------------------------------------------------------------------------------------------
 **Growth Plan**
+---------------------------------------------------------------------------------------------------------
 
 **Phase 1: Foundation (Current)**
 
